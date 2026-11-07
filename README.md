@@ -1,4 +1,4 @@
-# コメトレ v3
+# コメトレ v4
 
 食事と筋トレの増量記録アプリ（PWA）です。iPhoneのホーム画面に追加して使えます。
 AIもAPIキーも使わず、すべてiPhoneの中で動きます。料金はかかりません。
@@ -9,12 +9,12 @@ AIもAPIキーも使わず、すべてiPhoneの中で動きます。料金はか
 - foods.js / menus.js … 食品の表（約600品。コンビニ・チェーン店のメニューを含む）と筋トレ種目の表（約40種目）
 - engine.js … チャットの文章を読み取る仕組み
 - manifest.webmanifest / sw.js … ホーム画面用の設定と、オフラインで開くための仕組み
-- icons/ … ホーム画面のアイコン
+- apple-touch-icon.png / icon-*.png … ホーム画面のアイコン
 
 ## GitHub Pagesで公開する
 
 1. GitHubで新しいリポジトリを作る（例: kometore）。Publicにする
-2. 「Add file」→「Upload files」で、このフォルダの中身をすべてアップロードする（icons フォルダごと）
+2. 「Add file」→「Upload files」で、このフォルダの中身をすべてアップロードする
 3. 「Settings」→「Pages」で、Source を「Deploy from a branch」、Branch を「main」「/ (root)」にして保存
 4. 数分後に `https://ユーザー名.github.io/kometore/` で開けるようになる
 

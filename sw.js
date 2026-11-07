@@ -1,6 +1,6 @@
 // コメトレ service worker
-const VERSION = "kometore-v3";
-const SHELL = ["./", "./index.html", "./foods.js", "./menus.js", "./engine.js", "./manifest.webmanifest", "./icons/apple-touch-icon.png", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png"];
+const VERSION = "kometore-v4";
+const SHELL = ["./", "./index.html", "./foods.js", "./menus.js", "./engine.js", "./manifest.webmanifest", "./apple-touch-icon.png", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
