@@ -153,7 +153,7 @@
       else if ((m = bseg.match(/(\d+(?:\.\d+)?)\s*(g|グラム)の?\s*$/))) { amount = +m[1]; basis = "実測"; }
     }
     // 大盛りなど（同じ言葉のまとまりの中だけ見る）
-    const aseg = rawAfter.split(/[と、,\s。や]/)[0];
+    const aseg = rawAfter.replace(/^\s+/, "").split(/[と、,\s。や]/)[0];
     const mm = (bseg.slice(-4) + "|" + aseg).match(/特盛り?|メガ|超大盛り?|大盛り?|ダブル|中盛り?|半ライス|ハーフ|小盛り?|少なめ|ミニ/);
     if (mm) {
       const w = mm[0];
@@ -335,19 +335,27 @@
       }
       // 「コーヒーに牛乳」のコーヒーや「パンは〜」のように、すでにある食品の説明なら追加しない
       const exist = findExisting(day, f);
-      const q = readQty(text, hit, nextStart, fix ? exist : null);
+      let q = readQty(text, hit, nextStart, fix ? exist : null);
+      // 「牛めし 大盛」のように、店に大盛りのメニューがあればそれを使う
+      if (q.label && /大盛|特盛|少なめ/.test(q.label) && !q.explicitQty) {
+        const suf = q.label === "特盛" ? ["特盛", "特盛り"] : q.label === "少なめ" ? ["小盛", "小盛り"] : ["大盛", "大盛り"];
+        const base = hit.w.replace(/(並盛|並)$/, "");
+        const alt = lex.find((L) => L.type === "food" && suf.some((x) => L.w === base + x));
+        if (alt) { hit.f = alt.f; q = { ...q, amount: alt.f.u, note: "お店の栄養成分の目安", label: "" }; }
+      }
       for (let j = hit.e; j < Math.min(nextStart, hit.e + q.consumed); j++) used[j] = true;
       if (/^\s*に/.test(tail) && next && next.type === "food" && next.s - hit.e <= 4) continue;
       if (exist && /^\s*は/.test(tail) && !q.explicitQty && !q.label) continue;
-      let amount = q.amount, note = q.note, name = f.name + (q.label ? "（" + q.label + "）" : "");
+      const f2 = hit.f;
+      let amount = q.amount, note = q.note, name = f2.name + (q.label ? "（" + q.label + "）" : "");
       if (f.name === "牛乳" && !q.explicitQty && /(コーヒー|紅茶|珈琲|ラテ).{0,4}$/.test(text.slice(Math.max(0, hit.s - 8), hit.s))) {
         amount = 20; name = "牛乳（コーヒーに）"; note = "少し入れたとして推定";
       }
       if (f.name === "中華麺" && /替え玉/.test(text.slice(hit.s, hit.e + 1))) { name = "替え玉"; note = "1玉として推定"; }
       if (fix && exist) {
-        actions.push({ type: "update", id: exist.id, date, name, amount_g: amount, kcal_per_100g: f.k, protein_per_100g: f.p, basis: q.basis, note });
+        actions.push({ type: "update", id: exist.id, date, name, amount_g: amount, kcal_per_100g: f2.k, protein_per_100g: f2.p, basis: q.basis, note });
       } else {
-        actions.push({ type: "add", date, meal, name, amount_g: amount, kcal_per_100g: f.k, protein_per_100g: f.p, basis: (f.mine || f.chain) && q.basis === "推定" ? "表示" : q.basis, note: f.chain && /1人前として推定/.test(note) ? "お店の栄養成分の目安" : note });
+        actions.push({ type: "add", date, meal, name, amount_g: amount, kcal_per_100g: f2.k, protein_per_100g: f2.p, basis: (f2.mine || f2.chain) && q.basis === "推定" ? "表示" : q.basis, note: f2.chain && /1人前として推定/.test(note) ? "お店の栄養成分の目安" : note });
       }
     }
 

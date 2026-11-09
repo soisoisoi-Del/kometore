@@ -1,5 +1,5 @@
 // コメトレ service worker
-const VERSION = "kometore-v4";
+const VERSION = "kometore-v8";
 const SHELL = ["./", "./index.html", "./foods.js", "./menus.js", "./engine.js", "./manifest.webmanifest", "./apple-touch-icon.png", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png"];
 
 self.addEventListener("install", (e) => {
